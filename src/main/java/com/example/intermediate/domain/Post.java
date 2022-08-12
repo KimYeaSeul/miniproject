@@ -34,6 +34,10 @@ public class Post extends Timestamped {
   @Column(nullable = false)
   private String content;
 
+  //이미지 URL
+  @Column(nullable = false)
+  private String imageUrl;
+
   @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Comment> comments;
 
