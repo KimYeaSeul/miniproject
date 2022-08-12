@@ -12,11 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponseDto {
-  private Long id;
+  private Long postId;
   private String title;
   private String content;
   private String author;
+  //이미지 URl
+  private String imageUrl;
   private List<CommentResponseDto> commentResponseDtoList;
-  private LocalDateTime createdAt;
+//  private LocalDateTime createdAt;
   private LocalDateTime modifiedAt;
 }

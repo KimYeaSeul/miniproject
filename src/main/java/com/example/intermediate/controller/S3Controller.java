@@ -12,7 +12,7 @@ import java.io.IOException;
 public class S3Controller {
 
     private final S3Uploader s3Uploader;
-
+    //사진 업로드
     @RequestMapping(value = "/api/image", method = RequestMethod.POST)
     public ResponseDto<?> upload(@RequestParam("image") MultipartFile multipartFile) throws IOException {
         String s3Image = s3Uploader.upload(multipartFile, "static");

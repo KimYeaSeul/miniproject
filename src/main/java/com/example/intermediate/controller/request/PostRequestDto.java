@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class PostRequestDto {
   private String title;
   private String content;
+  //이미지 URL
+  private String imageUrl;
 }
