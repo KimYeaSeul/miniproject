@@ -108,7 +108,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllPost() {
         List<Post> allByOrderByModifiedAtDesc = postRepository.findAllByOrderByModifiedAtDesc();
-        List< PostListResponseDto> dtoList = new ArrayList<>();
+        List<PostListResponseDto> dtoList = new ArrayList<>();
 
         for(Post post : allByOrderByModifiedAtDesc){
             Long postId = post.getPostId();
