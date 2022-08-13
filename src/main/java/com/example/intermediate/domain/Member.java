@@ -26,11 +26,17 @@ public class Member extends Timestamped {
   private Long id;
 
   @Column(nullable = false)
+  private String username;
+
+  @Column(nullable = false)
   private String nickname;
 
   @Column(nullable = false)
   @JsonIgnore
   private String password;
+
+  @Column(unique = true)
+  private Long kakaoId;
 
   @Override
   public boolean equals(Object o) {

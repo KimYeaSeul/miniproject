@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberResponseDto {
   private Long id;
+  private String username;
   private String nickname;
   private LocalDateTime createdAt;
   private LocalDateTime modifiedAt;

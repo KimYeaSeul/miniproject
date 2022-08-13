@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 public class MemberRequestDto {
 
   @NotBlank
-  @Size(min = 4, max = 12)
-  @Pattern(regexp = "[a-zA-Z\\d]*${3,12}")
-  private String nickname;
+  private String username;
 
   @NotBlank
-  @Size(min = 4, max = 32)
-  @Pattern(regexp = "[a-z\\d]*${3,32}")
+  private String nickname;
+
+
+  @NotBlank
   private String password;
 
   @NotBlank
