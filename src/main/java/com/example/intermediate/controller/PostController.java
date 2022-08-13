@@ -41,9 +41,9 @@ public class PostController {
 
     //게시글 수정
     @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.PUT)
-    public ResponseDto<?> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto postRequestDto,
+    public ResponseDto<?> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto requestDto,
                                      HttpServletRequest request) {
-        return postService.updatePost(postId, postRequestDto, request);
+        return postService.updatePost(postId, requestDto, request);
     }
 
     //게시글 삭제
