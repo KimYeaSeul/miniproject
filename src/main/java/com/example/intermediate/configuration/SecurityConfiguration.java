@@ -38,8 +38,12 @@ public class SecurityConfiguration {
           "/user/username",
           "/user/nickname",
           "/user/kakao/callback",
-          "/h2-console/**",
           "/favicon.ico"
+          "/api/member/**",
+          "/api/post/**",
+          "/api/posts",
+          "/api/comment/**",
+          "/h2-console/**"
   };
   @Bean
   public PasswordEncoder passwordEncoder() {

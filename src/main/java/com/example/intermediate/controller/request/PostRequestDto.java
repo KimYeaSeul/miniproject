@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostRequestDto {
-  private String title;
-  private String content;
+    private String title;
+    private String content;
+    //이미지 URL
+    private String imageUrl;
 }
