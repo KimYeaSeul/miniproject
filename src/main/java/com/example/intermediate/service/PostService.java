@@ -1,6 +1,7 @@
 package com.example.intermediate.service;
 
 import com.example.intermediate.controller.response.CommentResponseDto;
+import com.example.intermediate.controller.response.PostListResponseDto;
 import com.example.intermediate.controller.response.PostResponseDto;
 import com.example.intermediate.domain.Comment;
 import com.example.intermediate.domain.Member;
@@ -106,7 +107,15 @@ public class PostService {
     //게시글 전체 조회
     @Transactional(readOnly = true)
     public ResponseDto<?> getAllPost() {
-        return ResponseDto.success(postRepository.findAllByOrderByModifiedAtDesc());
+        List<Post> allByOrderByModifiedAtDesc = postRepository.findAllByOrderByModifiedAtDesc();
+        List< PostListResponseDto> dtoList = new ArrayList<>();
+
+        for(Post post : allByOrderByModifiedAtDesc){
+            Long postId = post.getPostId();
+            PostListResponseDto postListResponseDto = new PostListResponseDto(post);
+            dtoList.add(postListResponseDto);
+        }
+        return ResponseDto.success(dtoList);
     }
 
     @Transactional
