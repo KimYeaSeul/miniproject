@@ -27,7 +27,6 @@ public class MemberService {
   private final MemberRepository memberRepository;
 
   private final PasswordEncoder passwordEncoder;
-//  private final AuthenticationManagerBuilder authenticationManagerBuilder;
   private final TokenProvider tokenProvider;
 
   @Transactional
