@@ -33,8 +33,15 @@ public class SecurityConfiguration {
   private final AuthenticationEntryPointException authenticationEntryPointException;
   private final AccessDeniedHandlerException accessDeniedHandlerException;
   private static final String[] PERMIT_URL_ARRAY={
+          "/user/signup",
+          "/user/login",
+          "/user/username",
+          "/user/nickname",
+          "/user/kakao/callback",
+          "/favicon.ico"
           "/api/member/**",
           "/api/post/**",
+          "/api/posts",
           "/api/comment/**",
           "/h2-console/**"
   };
@@ -51,7 +58,7 @@ public class SecurityConfiguration {
     http.headers().frameOptions().disable(); // 이거 하니까 h2됨.
 
     http.csrf()
-        .ignoringAntMatchers("/h2-console/**")
+        .ignoringAntMatchers("/h2-console/**", "/favicon.ico")
         .disable()
 
         .exceptionHandling()
