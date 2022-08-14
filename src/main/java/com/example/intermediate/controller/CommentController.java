@@ -6,11 +6,7 @@ import com.example.intermediate.service.CommentService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RequiredArgsConstructor
@@ -19,26 +15,33 @@ public class CommentController {
 
   private final CommentService commentService;
 
-  @RequestMapping(value = "/api/auth/comment", method = RequestMethod.POST)
+  // 댓글 작성
+  @PostMapping("/api/post/{postId}/comment")
   public ResponseDto<?> createComment(@RequestBody CommentRequestDto requestDto,
-      HttpServletRequest request) {
-    return commentService.createComment(requestDto, request);
+                                      @PathVariable int postId,
+                                      HttpServletRequest request) {
+    // @RequestHeader(value="Authentication") String accept,
+    return commentService.createComment(requestDto, (long) postId, request);
   }
 
-  @RequestMapping(value = "/api/comment/{id}", method = RequestMethod.GET)
-  public ResponseDto<?> getAllComments(@PathVariable Long id) {
-    return commentService.getAllCommentsByPost(id);
+  @GetMapping("/api/comment/{postId}")
+  public ResponseDto<?> getAllComments(@RequestParam Long postId) {
+    return commentService.getAllCommentsByPost(postId);
   }
 
-  @RequestMapping(value = "/api/auth/comment/{id}", method = RequestMethod.PUT)
-  public ResponseDto<?> updateComment(@PathVariable Long id, @RequestBody CommentRequestDto requestDto,
-      HttpServletRequest request) {
-    return commentService.updateComment(id, requestDto, request);
+  // 댓글 수정
+  @PutMapping("/api/post/{postId}/{commentId}")
+  public ResponseDto<?> updateComment(@PathVariable Long postId,
+                                      @PathVariable Long commentId,
+                                      @RequestBody CommentRequestDto requestDto,
+                                      HttpServletRequest request) {
+    return commentService.updateComment(postId, commentId, requestDto, request);
   }
 
-  @RequestMapping(value = "/api/auth/comment/{id}", method = RequestMethod.DELETE)
-  public ResponseDto<?> deleteComment(@PathVariable Long id,
-      HttpServletRequest request) {
-    return commentService.deleteComment(id, request);
+  // 댓글 삭제
+  @DeleteMapping("/api/post/{postId}/{commentId}")
+  public ResponseDto<?> deleteComment(@PathVariable Long postId, @PathVariable Long commentId,
+                                      HttpServletRequest request) {
+    return commentService.deleteComment(postId, commentId, request);
   }
 }
