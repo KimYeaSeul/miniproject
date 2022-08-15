@@ -127,17 +127,17 @@ public class CommentService {
 //      return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
 //    }
 
-    Comment comment = isPresentComment(postId);
-//    if (null == comment) {
-//      return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 id 입니다.");
-//    }
-//
+    Comment comment = isPresentComment(commentId);
+    if (null == comment) {
+      return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 id 입니다.");
+    }
+
 //    if (comment.validateMember(member)) {
 //      return ResponseDto.fail("BAD_REQUEST", "작성자만 수정할 수 있습니다.");
 //    }
 
     commentRepository.delete(comment);
-    return ResponseDto.success("success");
+    return ResponseDto.success(commentId + " 번 댓글이 삭제되었습니다.");
   }
 
   @Transactional(readOnly = true)
@@ -155,27 +155,26 @@ public class CommentService {
   }
 
 
-  @Transactional(readOnly = true)
-  public ResponseDto<?> getAllCommentsByPost(Long postId) {
-    Post post = postService.isPresentPost(postId);
-    if (post == null) {
-      return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
-    }
-    List<Comment> commentList = commentRepository.findAllByPost(post);
-    List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-
-    for (Comment comment : commentList) {
-      commentResponseDtoList.add(
-              CommentResponseDto.builder()
-                      .id(comment.getId())
-                      .author(comment.getMember().getNickname())
-                      .content(comment.getContent())
-                      .createdAt(comment.getCreatedAt())
-                      .modifiedAt(comment.getModifiedAt())
-                      .build()
-      );
-    }
-    return ResponseDto.success(commentResponseDtoList);
-  }
-
+//  @Transactional(readOnly = true)
+//  public ResponseDto<?> getAllCommentsByPost(Long postId) {
+//    Post post = postService.isPresentPost(postId);
+//    if (post == null) {
+//      return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
+//    }
+//    List<Comment> commentList = commentRepository.findAllByPost(post);
+//    List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+//
+//    for (Comment comment : commentList) {
+//      commentResponseDtoList.add(
+//              CommentResponseDto.builder()
+//                      .id(comment.getId())
+//                      .author(comment.getMember().getNickname())
+//                      .content(comment.getContent())
+//                      .createdAt(comment.getCreatedAt())
+//                      .modifiedAt(comment.getModifiedAt())
+//                      .build()
+//      );
+//    }
+//    return ResponseDto.success(commentResponseDtoList);
+//  }
 }

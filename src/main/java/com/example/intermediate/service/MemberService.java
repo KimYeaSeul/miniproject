@@ -39,7 +39,7 @@ public class MemberService {
 
   @Transactional
   public ResponseDto<?> createMember(MemberRequestDto requestDto) {
-    if (!requestDto.getPassword().equals(requestDto.getPasswordConfirm())) {
+    if (!requestDto.getPassword().equals(requestDto.getPasswordCheck())) {
       return ResponseDto.fail("400",
           "Password and Confirm Password do not match");
     }

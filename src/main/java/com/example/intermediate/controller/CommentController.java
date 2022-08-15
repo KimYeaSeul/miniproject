@@ -24,10 +24,10 @@ public class CommentController {
     return commentService.createComment(requestDto, (long) postId, request);
   }
 
-  @GetMapping("/api/comment/{postId}")
-  public ResponseDto<?> getAllComments(@RequestParam Long postId) {
-    return commentService.getAllCommentsByPost(postId);
-  }
+//  @GetMapping("/api/comment/{postId}")
+//  public ResponseDto<?> getAllComments(@RequestParam Long postId) {
+//    return commentService.getAllCommentsByPost(postId);
+//  }
 
   // 댓글 수정
   @PutMapping("/api/post/{postId}/{commentId}")
