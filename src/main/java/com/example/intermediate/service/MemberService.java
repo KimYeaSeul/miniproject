@@ -40,7 +40,7 @@ public class MemberService {
 
   @Transactional
   public ResponseDto<?> createMember(MemberRequestDto requestDto) {
-    if (!requestDto.getPassword().equals(requestDto.getPasswordConfirm())) {
+    if (!requestDto.getPassword().equals(requestDto.getPasswordCheck())) {
       return ResponseDto.fail("400",
           "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
     }
