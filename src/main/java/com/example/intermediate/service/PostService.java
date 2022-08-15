@@ -37,19 +37,19 @@ public class PostService {
 
     @Transactional
     public ResponseDto<?> createPost(PostRequestDto requestDto, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
+        if (null == request.getHeader("RefreshToken")) {
+            return ResponseDto.fail("400",
+                    "Login is required.");
         }
 
         if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
+            return ResponseDto.fail("400",
+                    "Login is required.");
         }
 
         Member member = validateMember(request);
         if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
+            return ResponseDto.fail("400", "INVALID_TOKEN");
         }
         Post post = Post.builder()
                 .title(requestDto.getTitle())
@@ -65,7 +65,7 @@ public class PostService {
                         .imageUrl(post.getImageUrl())
                         .modifiedAt(post.getModifiedAt())
                         .content(post.getContent())
-                        .author(post.getMember().getNickname())
+                        .nickname(post.getMember().getNickname())
 //            .createdAt(post.getCreatedAt())
                         .build()
         );
@@ -78,7 +78,7 @@ public class PostService {
 //        Post post = isPresentPost(postId);
         Post post = postRepository.findById(postId).orElseGet(null);
         if (null == post) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
+            return ResponseDto.fail("400", "Not existing postId");
         }
 
         Pageable pageable = PageRequest.of(commentsNum, pageLimit );
@@ -104,8 +104,8 @@ public class PostService {
                         .imageUrl(post.getImageUrl())
                         .modifiedAt(post.getModifiedAt())
                         .content(post.getContent())
-                        .author(post.getMember().getNickname())
-                        .commentResponseDtoList(commentResponseDtoList)
+                        .nickname(post.getMember().getNickname())
+                        .comments(commentResponseDtoList)
 //            .createdAt(post.getCreatedAt())
                         .build()
         );
@@ -128,28 +128,28 @@ public class PostService {
 
     @Transactional
     public ResponseDto<Post> updatePost(Long postId, PostRequestDto requestDto, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
+        if (null == request.getHeader("RefreshToken")) {
+            return ResponseDto.fail("400",
+                    "Login is required.");
         }
 
         if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
+            return ResponseDto.fail("400",
+                    "Login is required.");
         }
 
         Member member = validateMember(request);
         if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
+            return ResponseDto.fail("400", "INVALID_TOKEN");
         }
 
         Post post = isPresentPost(postId);
         if (null == post) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
+            return ResponseDto.fail("400", "Not existing postId");
         }
 
         if (post.validateMember(member)) {
-            return ResponseDto.fail("BAD_REQUEST", "작성자만 수정할 수 있습니다.");
+            return ResponseDto.fail("400", "Modified Author Only");
         }
 
         post.update(requestDto);
@@ -158,28 +158,28 @@ public class PostService {
 
     @Transactional
     public ResponseDto<?> deletePost(Long id, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
+        if (null == request.getHeader("RefreshToken")) {
+            return ResponseDto.fail("400",
+                    "Login is required.");
         }
 
         if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
+            return ResponseDto.fail("400",
+                    "Login is required.");
         }
 
         Member member = validateMember(request);
         if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
+            return ResponseDto.fail("400", "INVALID_TOKEN");
         }
 
         Post post = isPresentPost(id);
         if (null == post) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
+            return ResponseDto.fail("400", "Not existing postId");
         }
 
         if (post.validateMember(member)) {
-            return ResponseDto.fail("BAD_REQUEST", "작성자만 삭제할 수 있습니다.");
+            return ResponseDto.fail("400", "Deleted Author Only");
         }
 
         postRepository.delete(post);
@@ -194,7 +194,7 @@ public class PostService {
 
     @Transactional
     public Member validateMember(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
+        if (!tokenProvider.validateToken(request.getHeader("RefreshToken"))) {
             return null;
         }
         return tokenProvider.getMemberFromAuthentication();

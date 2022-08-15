@@ -37,9 +37,11 @@ public class PostController {
 
     //게시글 전체 조회
     @RequestMapping(value = "/api/posts", method = RequestMethod.GET)
-    public ResponseDto<?> getAllPosts(@RequestParam("pageNum") Integer pageNum, @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit){
+    public ResponseDto<?> getAllPosts(@RequestParam("pageNum") Integer pageNum,
+                                      @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit){
         return postService.getAllPost(pageNum, pageLimit);
     }
+
     //게시글 수정
     @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.PUT)
     public ResponseDto<?> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto requestDto,

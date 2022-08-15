@@ -16,10 +16,12 @@ public class PostResponseDto {
     private Long postId;
     private String title;
     private String content;
-    private String author;
+    private String nickname;
     //이미지 URl
     private String imageUrl;
-    private List<CommentResponseDto> commentResponseDtoList;
+    //이미지 UrlList
+//    private List<String> imageUrl;
+    private List<CommentResponseDto> comments;
     //  private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 }

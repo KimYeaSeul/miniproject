@@ -61,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().println(
             new ObjectMapper().writeValueAsString(
-                ResponseDto.fail("403", "Token이 유효하지 않습니다.")
+                ResponseDto.fail("403", "Token is not valid")
             )
         );
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

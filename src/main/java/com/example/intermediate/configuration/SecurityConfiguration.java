@@ -48,6 +48,7 @@ public class SecurityConfiguration {
           "/api/post/**",
           "/api/posts",
           "/api/comment/**",
+          "/user/google/**",
           "/h2-console/**"
   };
   @Bean
