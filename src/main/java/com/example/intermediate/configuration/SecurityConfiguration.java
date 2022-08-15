@@ -37,7 +37,7 @@ public class SecurityConfiguration {
           "/user/login",
           "/user/username",
           "/user/nickname",
-          "/user/kakao/callback",
+          "/user/kakao/**",
           "/favicon.ico",
           "/api/member/**",
           "/api/post/**",
