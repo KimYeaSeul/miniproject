@@ -73,13 +73,16 @@ public class PostService {
 
     //게시글 상세 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getPost(Long postId) {
-        Post post = isPresentPost(postId);
+    public ResponseDto<?> getPost(Long postId,int commentsNum, int pageLimit) {
+
+//        Post post = isPresentPost(postId);
+        Post post = postRepository.findById(postId).orElseGet(null);
         if (null == post) {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 게시글 id 입니다.");
         }
 
-        List<Comment> commentList = commentRepository.findAllByPost(post);
+        Pageable pageable = PageRequest.of(commentsNum, pageLimit );
+        List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
 
         for (Comment comment : commentList) {

@@ -28,8 +28,10 @@ public class PostController {
 
     //게시글 상세 조회
     @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.GET)
-    public ResponseDto<?> getPost(@PathVariable Long postId) {
-        return postService.getPost(postId);
+    public ResponseDto<?> getPost(@PathVariable Long postId,
+                                  @RequestParam("commentsNum") Integer commentsNum,
+                                  @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit) {
+        return postService.getPost(postId, commentsNum, pageLimit);
     }
 
 
