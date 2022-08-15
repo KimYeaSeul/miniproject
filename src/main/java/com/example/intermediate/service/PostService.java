@@ -10,6 +10,7 @@ import com.example.intermediate.controller.request.PostRequestDto;
 import com.example.intermediate.controller.response.ResponseDto;
 import com.example.intermediate.jwt.TokenProvider;
 import com.example.intermediate.repository.CommentRepository;
+import com.example.intermediate.repository.MemberRepository;
 import com.example.intermediate.repository.PostRepository;
 
 import java.util.ArrayList;
@@ -18,6 +19,9 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
 
     private final TokenProvider tokenProvider;
 
@@ -46,7 +51,6 @@ public class PostService {
         if (null == member) {
             return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
         }
-
         Post post = Post.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
@@ -106,8 +110,9 @@ public class PostService {
 
     //게시글 전체 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllPost() {
-        List<Post> allByOrderByModifiedAtDesc = postRepository.findAllByOrderByModifiedAtDesc();
+    public ResponseDto<?> getAllPost(int pageNum, int pageLimit) {
+        Pageable pageable = PageRequest.of(pageNum, pageLimit );
+        List<Post> allByOrderByModifiedAtDesc = postRepository.findAllByOrderByModifiedAtDesc(pageable);
         List<PostListResponseDto> dtoList = new ArrayList<>();
 
         for(Post post : allByOrderByModifiedAtDesc){

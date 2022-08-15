@@ -7,11 +7,11 @@ import com.example.intermediate.service.PostService;
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,10 +35,9 @@ public class PostController {
 
     //게시글 전체 조회
     @RequestMapping(value = "/api/posts", method = RequestMethod.GET)
-    public ResponseDto<?> getAllPosts() {
-        return postService.getAllPost();
+    public ResponseDto<?> getAllPosts(@RequestParam("pageNum") Integer pageNum, @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit){
+        return postService.getAllPost(pageNum, pageLimit);
     }
-
     //게시글 수정
     @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.PUT)
     public ResponseDto<?> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto requestDto,
