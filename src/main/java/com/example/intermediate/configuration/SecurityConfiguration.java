@@ -38,11 +38,12 @@ public class SecurityConfiguration {
           "/user/username",
           "/user/nickname",
           "/user/kakao/callback",
-          "/favicon.ico"
+          "/favicon.ico",
           "/api/member/**",
           "/api/post/**",
           "/api/posts",
           "/api/comment/**",
+          "/user/google/**",
           "/h2-console/**"
   };
   @Bean

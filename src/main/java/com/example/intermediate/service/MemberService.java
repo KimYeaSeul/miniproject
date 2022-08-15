@@ -1,12 +1,9 @@
 package com.example.intermediate.service;
 
-import com.example.intermediate.controller.request.KakoUserInfoDto;
+import com.example.intermediate.controller.request.*;
 import com.example.intermediate.controller.response.MemberResponseDto;
 import com.example.intermediate.domain.Member;
-import com.example.intermediate.controller.request.LoginRequestDto;
-import com.example.intermediate.controller.request.MemberRequestDto;
 import com.example.intermediate.controller.response.ResponseDto;
-import com.example.intermediate.controller.request.TokenDto;
 import com.example.intermediate.jwt.TokenProvider;
 import com.example.intermediate.repository.MemberRepository;
 import java.util.Optional;
@@ -18,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,6 +33,7 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
 
+
   private final PasswordEncoder passwordEncoder;
   private final TokenProvider tokenProvider;
 
@@ -42,7 +41,7 @@ public class MemberService {
   public ResponseDto<?> createMember(MemberRequestDto requestDto) {
     if (!requestDto.getPassword().equals(requestDto.getPasswordConfirm())) {
       return ResponseDto.fail("400",
-          "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+          "Password and Confirm Password do not match");
     }
 
     Member member = Member.builder()
@@ -68,15 +67,19 @@ public class MemberService {
     Member member = isPresentMemberByUsername(requestDto.getUsername());
     if (null == member) {
       return ResponseDto.fail("400",
-          "사용자를 찾을 수 없습니다.");
+          "User not found");
     }
 
     if (!member.validatePassword(passwordEncoder, requestDto.getPassword())) {
-      return ResponseDto.fail("400", "비밀번호 오류입니다.");
+      return ResponseDto.fail("400", "Password error");
     }
 
     if(member.getKakaoId()!=null){
-      return ResponseDto.fail("403", "카카오 이용자입니다.");
+      return ResponseDto.fail("403", "Please log in with Kakao");
+    }
+
+    if(member.getGoogleId()!=null){
+      return ResponseDto.fail("403", "Please log in with Google");
     }
 
     TokenDto tokenDto = tokenProvider.generateTokenDto(member);
@@ -96,7 +99,7 @@ public class MemberService {
 
   public ResponseDto<?> logout(HttpServletRequest request) {
     if (!tokenProvider.validateToken(request.getHeader("RefreshToken"))) {
-      return ResponseDto.fail("403", "Token이 유효하지 않습니다.");
+      return ResponseDto.fail("403", "Token is not valid");
     }
     Member member = tokenProvider.getMemberFromAuthentication();
     if (null == member) {
@@ -128,13 +131,13 @@ public class MemberService {
   public ResponseDto<?> checkUsername(String username){
     Member member = isPresentMemberByUsername(username);
     if(member == null) return ResponseDto.success(true);
-    else return ResponseDto.fail("400","아이디가 존재합니다.");
+    else return ResponseDto.fail("400","ID already exists");
   }
 
   public ResponseDto<?> checkNickname(String nickname){
     Member member = isPresentMemberByNickname(nickname);
     if(member == null) return ResponseDto.success(true);
-    else return ResponseDto.fail("400","닉네임이 존재합니다.");
+    else return ResponseDto.fail("400","Nickname already exists");
   }
 
   public ResponseDto<?> kakaoLogin(String code, HttpServletResponse response) {
@@ -184,7 +187,7 @@ public class MemberService {
       }
     }
     catch (JsonProcessingException e){
-      return ResponseDto.fail("403","로그인에 실패했습니다.");
+      return ResponseDto.fail("403","Failed to log in with Kakao");
     }
   }
 
@@ -242,5 +245,104 @@ public class MemberService {
             .get("nickname").asText();
 
     return new KakoUserInfoDto(id,nickname);
+  }
+  @Value("${google.client.id}")
+  private String CLIENT_ID;
+  @Value("${google.client.pw}")
+  private String CLIENT_SECRET;
+  @Value("${google.redirect.url}")
+  private String REDIRECT_URI;
+  public ResponseDto<?> googleLogin(String code, HttpServletResponse response) {
+    try {
+      // 1. "인가 코드"로 "액세스 토큰" 요청
+      String accessToken = getGoogleAccessToken(code);
+      // 2. 토큰으로 카카오 API 호출
+      GoogleUserInfoDto googleUserInfo = getGoogleUserInfo(accessToken);
+
+      // DB 에 중복된 Kakao Id 가 있는지 확인
+      String googleId = googleUserInfo.getId();
+      Member googleUser = memberRepository.findByGoogleId(googleId)
+              .orElse(null);
+      if(googleUser != null){
+        TokenDto tokenDto = tokenProvider.generateTokenDto(googleUser);
+        tokenToHeaders(tokenDto, response);
+        return ResponseDto.success(
+                MemberResponseDto.builder()
+                        .id(googleUser.getId())
+                        .username(googleUser.getUsername())
+                        .nickname(googleUser.getNickname())
+                        .createdAt(googleUser.getCreatedAt())
+                        .modifiedAt(googleUser.getModifiedAt())
+                        .build()
+        );
+      }
+      else{
+        // 회원가입
+        Member member = Member.builder()
+                .username(UUID.randomUUID().toString())
+                .nickname(googleUserInfo.getName())
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                .googleId(googleId)
+                .build();
+        memberRepository.save(member);
+        TokenDto tokenDto = tokenProvider.generateTokenDto(member);
+        tokenToHeaders(tokenDto, response);
+        return ResponseDto.success(
+                MemberResponseDto.builder()
+                        .id(member.getId())
+                        .username(member.getUsername())
+                        .nickname(member.getNickname())
+                        .createdAt(member.getCreatedAt())
+                        .modifiedAt(member.getModifiedAt())
+                        .build()
+        );
+      }
+
+
+    }catch (JsonProcessingException e){
+      return ResponseDto.fail("403","Failed to log in with Google");
+    }
+  }
+
+  private String getGoogleAccessToken(String code) throws JsonProcessingException {
+    String url = "https://oauth2.googleapis.com/token";
+
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("code", code);
+    params.add("client_id", CLIENT_ID);
+    params.add("client_secret", CLIENT_SECRET);
+    params.add("redirect_uri", REDIRECT_URI);
+    params.add("grant_type", "authorization_code");
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/x-www-form-urlencoded");
+
+
+    HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
+    RestTemplate rt = new RestTemplate();//서버 대 서버 요청을 보냄
+    ResponseEntity<String> accessTokenResponse = rt.exchange(url, HttpMethod.POST, httpEntity, String.class);
+
+    // HTTP 응답 (JSON) -> 액세스 토큰 파싱
+    String responseBody = accessTokenResponse.getBody();//바디부분
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode jsonNode = objectMapper.readTree(responseBody);//json형태를 객체형태로 바꾸기
+    return jsonNode.get("access_token").asText();
+  }
+
+  private GoogleUserInfoDto getGoogleUserInfo(String accessToken) throws JsonProcessingException {
+    String url = "https://www.googleapis.com/oauth2/v1/userinfo";
+    // HTTP Header 생성
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Authorization", "Bearer " + accessToken);
+    // HTTP 요청 보내기
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(headers);
+    RestTemplate rt = new RestTemplate();//서버 대 서버 요청을 보냄
+    ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, request, String.class);
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonNode jsonNode = objectMapper.readTree(response.getBody());
+    String id = jsonNode.get("id").toString();
+    String name = jsonNode.get("name").toString();
+    return new GoogleUserInfoDto(id,name);
   }
 }
