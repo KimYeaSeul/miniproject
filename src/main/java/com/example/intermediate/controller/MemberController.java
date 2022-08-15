@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -42,13 +43,15 @@ public class MemberController {
   }
 
   @PostMapping("/user/username")
-  public ResponseDto<?> usernameCheck(@RequestBody @Valid String username){
-    return memberService.checkUsername(username);
+  public ResponseDto<?> usernameCheck(@RequestBody Map<String, String> body){
+    // 이러케 해야 값이 들어오네요.!
+    return memberService.checkUsername(body.get("username"));
   }
 
   @PostMapping("/user/nickname")
-  public ResponseDto<?> nicknameCheck(@RequestBody @Valid String nickname){
-    return memberService.checkNickname(nickname);
+  public ResponseDto<?> nicknameCheck(@RequestBody Map<String, String> body){
+    // 이러케 해야 값이 들어오네요.!
+    return memberService.checkNickname(body.get("nickname"));
   }
 
 

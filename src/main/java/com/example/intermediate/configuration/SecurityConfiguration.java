@@ -92,6 +92,8 @@ public class SecurityConfiguration {
     CorsConfiguration configuration = new CorsConfiguration();
 
     configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+    configuration.addExposedHeader("Authorization");
+    configuration.addExposedHeader("RefreshToken");
 //    configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
     configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
     configuration.setAllowedHeaders(Arrays.asList("*"));

@@ -130,6 +130,7 @@ public class MemberService {
 
   public ResponseDto<?> checkUsername(String username){
     Member member = isPresentMemberByUsername(username);
+    System.out.println("username = " + username + " member = "+ member);
     if(member == null) return ResponseDto.success(true);
     else return ResponseDto.fail("400","ID already exists");
   }

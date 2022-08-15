@@ -23,6 +23,7 @@ public class PostController {
     @RequestMapping(value = "/api/post", method = RequestMethod.POST)
     public ResponseDto<?> createPost(@RequestBody PostRequestDto requestDto,
                                      HttpServletRequest request) {
+        System.out.println("requestDto : " + requestDto);
         return postService.createPost(requestDto, request);
     }
 
