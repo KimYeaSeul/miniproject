@@ -2,6 +2,7 @@ package com.example.intermediate.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,6 +39,9 @@ public class Member extends Timestamped {
   @Column(unique = true)
   private Long kakaoId;
 
+  @Column(unique = true)
+  private String googleId;
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -58,4 +62,6 @@ public class Member extends Timestamped {
   public boolean validatePassword(PasswordEncoder passwordEncoder, String password) {
     return passwordEncoder.matches(password, this.password);
   }
+
+
 }

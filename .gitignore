@@ -156,4 +156,5 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 # End of https://www.toptal.com/developers/gitignore/api/macos,gradle,intellij,java%
-src/main/resources/application-oauth.properties
+
+application-oauth.properties
