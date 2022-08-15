@@ -5,26 +5,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class PostListResponseDto {
     private Long postId;
     private String title;
-    private String author;
+    private String nickname;
     private String imageUrl;
+//    private List<String> imageUrl;
     //    private long postHeartCount;
-    private int commentCount;
+    private int numComments;
     //    private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public PostListResponseDto(Post post) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
-        this.author = post.getMember().getNickname();
+        this.nickname = post.getMember().getNickname();
         this.imageUrl = post.getImageUrl();
 //        this.postHeartCount = postHeartCount;
-        this.commentCount = post.getComments().size();
+        this.numComments = post.getComments().size();
 //        this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
     }
