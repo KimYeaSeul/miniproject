@@ -26,7 +26,7 @@ public class AwsS3Service {
     private final AmazonS3 amazonS3;
 
     public List<String> uploadFile(List<MultipartFile> multipartFile) {
-        List<String> fileNameList = new ArrayList<>();
+        List<String> imgUrlList = new ArrayList<>();
 
         // forEach 구문을 통해 multipartFile로 넘어온 파일들 하나씩 fileNameList에 추가
         multipartFile.forEach(file -> {
@@ -38,14 +38,13 @@ public class AwsS3Service {
             try(InputStream inputStream = file.getInputStream()) {
                 amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
+                imgUrlList.add(amazonS3.getUrl(bucket,fileName).toString());
             } catch(IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
-
-            fileNameList.add(fileName);
         });
 
-        return fileNameList;
+        return imgUrlList;
     }
 
 //    public void deleteFile(String fileName) {
