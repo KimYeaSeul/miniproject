@@ -11,7 +11,7 @@ public class ResponseDto<T> {
   private Status status;
 
   public static <T> ResponseDto<T> success(T data) {
-    return new ResponseDto<>(true, data, new Status("200","완료되었습니다."));
+    return new ResponseDto<>(true, data, new Status("200","Success!"));
   }
 
   public static <T> ResponseDto<T> fail(String code, String message) {
