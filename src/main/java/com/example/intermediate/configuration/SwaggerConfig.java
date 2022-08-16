@@ -33,8 +33,31 @@ public class SwaggerConfig{
 
     @Bean
     public Docket commonApi() {
+        //Authentication header 처리를 위해 사용
+        ParameterBuilder aParameterBuilder = new ParameterBuilder();
+        aParameterBuilder.name("Authorization") //헤더 이름
+                .description("AccessToken") //설명
+                .modelRef(new ModelRef("string"))
+                .parameterType("header")
+                .required(false)
+                .build();
+
+        ParameterBuilder aParameterBuilder2 = new ParameterBuilder();
+        aParameterBuilder2.name("RefreshToken") //헤더 이름
+                .description("RefreshToken") //설명
+                .modelRef(new ModelRef("string"))
+                .parameterType("header")
+                .required(false)
+                .build();
+
+        List<Parameter> aParameters = new ArrayList<>();
+        aParameters.add(aParameterBuilder.build());
+        aParameters.add(aParameterBuilder2.build());
+
+
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("example")//빈설정을 여러개 해줄경우 구분하기 위한 구분자.
+                .globalOperationParameters(aParameters)
                 .apiInfo(this.apiInfo())//스웨거 설명
                 .select()//apis, paths를 사용하주기 위한 builder
                 .apis(RequestHandlerSelectors.any())//탐색할 클래스 필터링
