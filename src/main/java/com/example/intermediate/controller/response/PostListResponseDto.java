@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class PostListResponseDto {
-    private Long postId;
+    private Long id;
     private String title;
     private String nickname;
 //    private String imageUrl;
@@ -21,7 +21,7 @@ public class PostListResponseDto {
     private LocalDateTime modifiedAt;
 
     public PostListResponseDto(Post post) {
-        this.postId = post.getPostId();
+        this.id = post.getId();
         this.title = post.getTitle();
         this.nickname = post.getMember().getNickname();
         this.imageUrl = post.getImageUrl();

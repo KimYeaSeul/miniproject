@@ -60,7 +60,7 @@ public class PostService {
         postRepository.save(post);
         return ResponseDto.success(
                 PostResponseDto.builder()
-                        .postId(post.getPostId())
+                        .id(post.getId())
                         .title(post.getTitle())
                         .imageUrl(post.getImageUrl())
                         .modifiedAt(post.getModifiedAt())
@@ -73,15 +73,15 @@ public class PostService {
 
     //게시글 상세 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getPost(Long postId) {
-        Post post = postRepository.findById(postId).orElseGet(null);
+    public ResponseDto<?> getPost(Long id) {
+        Post post = postRepository.findById(id).orElseGet(null);
         if (null == post) {
             return ResponseDto.fail("400", "Not existing postId");
         }
 
         return ResponseDto.success(
                 PostResponseDto.builder()
-                        .postId(post.getPostId())
+                        .id(post.getId())
                         .title(post.getTitle())
                         .imageUrl(post.getImageUrl())
                         .modifiedAt(post.getModifiedAt())
@@ -131,8 +131,8 @@ public class PostService {
 //    }
     //게시글 상세조회 댓글 분리
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllCommentsByPostId(Long postId, int commentsNum, int pageLimit){
-        Post post = isPresentPost(postId);
+    public ResponseDto<?> getAllCommentsById(Long id, int commentsNum, int pageLimit){
+        Post post = isPresentPost(id);
         if (post == null) {
             return ResponseDto.fail("400", "Not existing postId");
         }
@@ -161,7 +161,7 @@ public class PostService {
         List<PostListResponseDto> dtoList = new ArrayList<>();
 
         for(Post post : allByOrderByModifiedAtDesc){
-            Long postId = post.getPostId();
+            Long id = post.getId();
             PostListResponseDto postListResponseDto = new PostListResponseDto(post);
             dtoList.add(postListResponseDto);
         }
@@ -169,7 +169,7 @@ public class PostService {
     }
 
     @Transactional
-    public ResponseDto<Post> updatePost(Long postId, PostRequestDto requestDto, HttpServletRequest request) {
+    public ResponseDto<Post> updatePost(Long id, PostRequestDto requestDto, HttpServletRequest request) {
         if (null == request.getHeader("RefreshToken")) {
             return ResponseDto.fail("400",
                     "Login is required.");
@@ -185,7 +185,7 @@ public class PostService {
             return ResponseDto.fail("400", "INVALID_TOKEN");
         }
 
-        Post post = isPresentPost(postId);
+        Post post = isPresentPost(id);
         if (null == post) {
             return ResponseDto.fail("400", "Not existing postId");
         }

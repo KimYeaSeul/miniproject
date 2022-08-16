@@ -16,12 +16,12 @@ public class CommentController {
   private final CommentService commentService;
 
   // 댓글 작성
-  @PostMapping("/api/post/{postId}/comment")
+  @PostMapping("/api/post/{id}/comment")
   public ResponseDto<?> createComment(@RequestBody CommentRequestDto requestDto,
-                                      @PathVariable int postId,
+                                      @PathVariable int id,
                                       HttpServletRequest request) {
     // @RequestHeader(value="Authentication") String accept,
-    return commentService.createComment(requestDto, (long) postId, request);
+    return commentService.createComment(requestDto, (long) id, request);
   }
 
 //  @GetMapping("/api/comment/{postId}")
@@ -30,18 +30,18 @@ public class CommentController {
 //  }
 
   // 댓글 수정
-  @PutMapping("/api/post/{postId}/{commentId}")
-  public ResponseDto<?> updateComment(@PathVariable Long postId,
+  @PutMapping("/api/post/{id}/{commentId}")
+  public ResponseDto<?> updateComment(@PathVariable Long id,
                                       @PathVariable Long commentId,
                                       @RequestBody CommentRequestDto requestDto,
                                       HttpServletRequest request) {
-    return commentService.updateComment(postId, commentId, requestDto, request);
+    return commentService.updateComment(id, commentId, requestDto, request);
   }
 
   // 댓글 삭제
-  @DeleteMapping("/api/post/{postId}/{commentId}")
-  public ResponseDto<?> deleteComment(@PathVariable Long postId, @PathVariable Long commentId,
+  @DeleteMapping("/api/post/{id}/{commentId}")
+  public ResponseDto<?> deleteComment(@PathVariable Long id, @PathVariable Long commentId,
                                       HttpServletRequest request) {
-    return commentService.deleteComment(postId, commentId, request);
+    return commentService.deleteComment(id, commentId, request);
   }
 }
