@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -44,12 +45,16 @@ public class SecurityConfiguration {
           "/user/nickname",
           "/user/kakao/**",
           "/favicon.ico",
+          "/swagger-ui/index.html",
           "/api/member/**",
           "/api/post/**",
           "/api/posts",
           "/api/comment/**",
           "/user/google/**",
-          "/h2-console/**"
+          "/h2-console/**",
+          "/webjars/**",
+          "/swagger-ui.html",
+          "/v2/**","/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html/**","/swagger-ui/**"
   };
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -104,4 +109,6 @@ public class SecurityConfiguration {
     source.registerCorsConfiguration("/**", configuration);
     return source;
   }
+
+
 }
