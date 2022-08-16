@@ -18,9 +18,9 @@ public class PostResponseDto {
     private String content;
     private String nickname;
     //이미지 URl
-    private String imageUrl;
+//    private String imageUrl;
     //이미지 UrlList
-//    private List<String> imageUrl;
+    private List<String> imageUrl;
 //    private List<CommentResponseDto> comments;
     //  private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;

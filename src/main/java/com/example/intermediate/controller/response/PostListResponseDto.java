@@ -13,8 +13,8 @@ public class PostListResponseDto {
     private Long postId;
     private String title;
     private String nickname;
-    private String imageUrl;
-//    private List<String> imageUrl;
+//    private String imageUrl;
+    private List<String> imageUrl;
     //    private long postHeartCount;
     private int numComments;
     //    private LocalDateTime createdAt;
