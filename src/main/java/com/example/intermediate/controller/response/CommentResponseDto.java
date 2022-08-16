@@ -12,8 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CommentResponseDto {
   private Long id;
-  private String author;
+//  private String author;
   private String content;
-  private LocalDateTime createdAt;
-  private LocalDateTime modifiedAt;
+  private String nickname;
+//  private LocalDateTime createdAt;
+//  private LocalDateTime modifiedAt;
+  private boolean IsMine;
 }

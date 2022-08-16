@@ -10,18 +10,18 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class PostListResponseDto {
-    private Long postId;
+    private Long id;
     private String title;
     private String nickname;
-    private String imageUrl;
-//    private List<String> imageUrl;
+//    private String imageUrl;
+    private List<String> imageUrl;
     //    private long postHeartCount;
     private int numComments;
     //    private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public PostListResponseDto(Post post) {
-        this.postId = post.getPostId();
+        this.id = post.getId();
         this.title = post.getTitle();
         this.nickname = post.getMember().getNickname();
         this.imageUrl = post.getImageUrl();

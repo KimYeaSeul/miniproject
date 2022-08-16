@@ -19,7 +19,7 @@ public class Post extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -28,11 +28,11 @@ public class Post extends Timestamped {
     private String content;
 
     //이미지 URL
-    @Column(nullable = false)
-    private String imageUrl;
-//    @Column(name="imageUrl", nullable = false)
-//    @ElementCollection(targetClass = String.class)
-//    private List<String> imageUrl;
+//    @Column(nullable = false)
+//    private String imageUrl;
+    @Column(name="imageUrl", nullable = false)
+    @ElementCollection(targetClass = String.class)
+    private List<String> imageUrl;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments;

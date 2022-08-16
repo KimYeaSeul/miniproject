@@ -28,12 +28,31 @@ public class PostController {
     }
 
     //게시글 상세 조회
-    @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.GET)
-    public ResponseDto<?> getPost(@PathVariable Long postId,
-                                  @RequestParam("commentsNum") Integer commentsNum,
-                                  @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit) {
-        return postService.getPost(postId, commentsNum, pageLimit);
+    @RequestMapping(value = "/api/post/{id}", method = RequestMethod.GET)
+    public ResponseDto<?> getPost(@PathVariable Long id,
+                                  HttpServletRequest request) {
+        return postService.getPost(id,request);
     }
+
+//    @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.GET)
+//    public ResponseDto<?> getPost(@PathVariable Long postId,
+//                                  @RequestParam("commentsNum") Integer commentsNum,
+//                                  @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit) {
+//        return postService.getPost(postId, commentsNum, pageLimit);
+//    }
+    //게시글 상세 조회 댓글 분리
+    @RequestMapping(value = "/api/post/{id}/comments", method = RequestMethod.GET)
+    public ResponseDto<?> getAllCommentsById(@PathVariable Long id,
+                                                 @RequestParam("commentsNum") Integer commentsNum,
+                                                 @RequestParam(value = "pageLimit",defaultValue = "5") Integer pageLimit,
+                                             HttpServletRequest request){
+        return postService.getAllCommentsById(id, commentsNum, pageLimit, request);
+    }
+
+    //  @GetMapping("/api/comment/{postId}")
+//  public ResponseDto<?> getAllComments(@RequestParam Long postId) {
+//    return commentService.getAllCommentsByPost(postId);
+//  }
 
 
     //게시글 전체 조회
@@ -44,17 +63,17 @@ public class PostController {
     }
 
     //게시글 수정
-    @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.PUT)
-    public ResponseDto<?> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto requestDto,
+    @RequestMapping(value = "/api/post/{id}", method = RequestMethod.PUT)
+    public ResponseDto<?> updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto,
                                      HttpServletRequest request) {
-        return postService.updatePost(postId, requestDto, request);
+        return postService.updatePost(id, requestDto, request);
     }
 
     //게시글 삭제
-    @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.DELETE)
-    public ResponseDto<?> deletePost(@PathVariable Long postId,
+    @RequestMapping(value = "/api/post/{id}", method = RequestMethod.DELETE)
+    public ResponseDto<?> deletePost(@PathVariable Long id,
                                      HttpServletRequest request) {
-        return postService.deletePost(postId, request);
+        return postService.deletePost(id, request);
     }
 
 }

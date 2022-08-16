@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +61,7 @@ public class PostService {
         postRepository.save(post);
         return ResponseDto.success(
                 PostResponseDto.builder()
-                        .postId(post.getPostId())
+                        .id(post.getId())
                         .title(post.getTitle())
                         .imageUrl(post.getImageUrl())
                         .modifiedAt(post.getModifiedAt())
@@ -73,42 +74,119 @@ public class PostService {
 
     //게시글 상세 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getPost(Long postId,int commentsNum, int pageLimit) {
-
-//        Post post = isPresentPost(postId);
-        Post post = postRepository.findById(postId).orElseGet(null);
+    public ResponseDto<?> getPost(Long id, HttpServletRequest request) {
+        Post post = postRepository.findById(id).orElseGet(null);
         if (null == post) {
             return ResponseDto.fail("400", "Not existing postId");
         }
 
-        Pageable pageable = PageRequest.of(commentsNum, pageLimit );
-        List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
-        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        boolean IsMine = false;
 
-        for (Comment comment : commentList) {
-            commentResponseDtoList.add(
-                    CommentResponseDto.builder()
-                            .id(comment.getId())
-                            .author(comment.getMember().getNickname())
-                            .content(comment.getContent())
-                            .createdAt(comment.getCreatedAt())
-                            .modifiedAt(comment.getModifiedAt())
-                            .build()
-            );
+        if (null != request.getHeader("Authorization") && null != request.getHeader("RefreshToken")) {
+            Member member = validateMember(request);
+            IsMine = post.getMember().getNickname().equals(member.getNickname());
+//            return ResponseDto.success(
+//                    PostResponseDto.builder()
+//                            .id(post.getId())
+//                            .title(post.getTitle())
+//                            .imageUrl(post.getImageUrl())
+//                            .modifiedAt(post.getModifiedAt())
+//                            .content(post.getContent())
+//                            .nickname(post.getMember().getNickname())
+//                            .IsMine(false)
+//                            .build()
+//            );
         }
-
+//        Member member = validateMember(request);
         return ResponseDto.success(
                 PostResponseDto.builder()
-                        .postId(post.getPostId())
+                        .id(post.getId())
                         .title(post.getTitle())
                         .imageUrl(post.getImageUrl())
                         .modifiedAt(post.getModifiedAt())
                         .content(post.getContent())
                         .nickname(post.getMember().getNickname())
-                        .comments(commentResponseDtoList)
-//            .createdAt(post.getCreatedAt())
+//                        .IsMine(post.getMember().getNickname().equals(member.getNickname()))
+                        .IsMine(IsMine)
                         .build()
         );
+    }
+
+//    @Transactional(readOnly = true)
+//    public ResponseDto<?> getPost(Long postId,int commentsNum, int pageLimit) {
+//
+////        Post post = isPresentPost(postId);
+//        Post post = postRepository.findById(postId).orElseGet(null);
+//        if (null == post) {
+//            return ResponseDto.fail("400", "Not existing postId");
+//        }
+//
+//        Pageable pageable = PageRequest.of(commentsNum, pageLimit );
+//        List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
+//        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+//
+//        for (Comment comment : commentList) {
+//            commentResponseDtoList.add(
+//                    CommentResponseDto.builder()
+//                            .id(comment.getId())
+//                            .author(comment.getMember().getNickname())
+//                            .content(comment.getContent())
+//                            .createdAt(comment.getCreatedAt())
+//                            .modifiedAt(comment.getModifiedAt())
+//                            .build()
+//            );
+//        }
+//
+//        return ResponseDto.success(
+//                PostResponseDto.builder()
+//                        .postId(post.getPostId())
+//                        .title(post.getTitle())
+//                        .imageUrl(post.getImageUrl())
+//                        .modifiedAt(post.getModifiedAt())
+//                        .content(post.getContent())
+//                        .nickname(post.getMember().getNickname())
+//                        .comments(commentResponseDtoList)
+////            .createdAt(post.getCreatedAt())
+//                        .build()
+//        );
+//    }
+    //게시글 상세조회 댓글 분리
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllCommentsById(Long id, int commentsNum, int pageLimit, HttpServletRequest request){
+        Post post = isPresentPost(id);
+        if (post == null) {
+            return ResponseDto.fail("400", "Not existing postId");
+        }
+
+        Pageable pageable = PageRequest.of(commentsNum, pageLimit );
+        List<Comment> commentList = commentRepository.findAllByPost(post,pageable);
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+
+        if (null == request.getHeader("Authorization") || null == request.getHeader("RefreshToken")) {
+            for (Comment comment : commentList) {
+                commentResponseDtoList.add(
+                        CommentResponseDto.builder()
+                                .id(comment.getId())
+                                .nickname(comment.getMember().getNickname())
+                                .content(comment.getContent())
+                                .IsMine(false)
+                                .build()
+                );
+            }
+            return ResponseDto.success(commentResponseDtoList);
+        }
+        Member member = validateMember(request);
+        for (Comment comment : commentList) {
+            commentResponseDtoList.add(
+                    CommentResponseDto.builder()
+                            .id(comment.getId())
+                            .nickname(comment.getMember().getNickname())
+                            .content(comment.getContent())
+                            .IsMine(comment.getMember().getNickname().equals(member.getNickname()))
+                            .build()
+            );
+        }
+        return ResponseDto.success(commentResponseDtoList);
     }
 
     //게시글 전체 조회
@@ -119,7 +197,7 @@ public class PostService {
         List<PostListResponseDto> dtoList = new ArrayList<>();
 
         for(Post post : allByOrderByModifiedAtDesc){
-            Long postId = post.getPostId();
+            Long id = post.getId();
             PostListResponseDto postListResponseDto = new PostListResponseDto(post);
             dtoList.add(postListResponseDto);
         }
@@ -127,7 +205,7 @@ public class PostService {
     }
 
     @Transactional
-    public ResponseDto<Post> updatePost(Long postId, PostRequestDto requestDto, HttpServletRequest request) {
+    public ResponseDto<Post> updatePost(Long id, PostRequestDto requestDto, HttpServletRequest request) {
         if (null == request.getHeader("RefreshToken")) {
             return ResponseDto.fail("400",
                     "Login is required.");
@@ -143,7 +221,7 @@ public class PostService {
             return ResponseDto.fail("400", "INVALID_TOKEN");
         }
 
-        Post post = isPresentPost(postId);
+        Post post = isPresentPost(id);
         if (null == post) {
             return ResponseDto.fail("400", "Not existing postId");
         }
