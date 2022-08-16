@@ -15,6 +15,7 @@ public class PostListResponseDto {
     private String nickname;
 //    private String imageUrl;
     private List<String> imageUrl;
+    private String content;
     //    private long postHeartCount;
     private int numComments;
     //    private LocalDateTime createdAt;
@@ -25,6 +26,7 @@ public class PostListResponseDto {
         this.title = post.getTitle();
         this.nickname = post.getMember().getNickname();
         this.imageUrl = post.getImageUrl();
+        this.content = post.getContent();
 //        this.postHeartCount = postHeartCount;
         this.numComments = post.getComments().size();
 //        this.createdAt = post.getCreatedAt();
