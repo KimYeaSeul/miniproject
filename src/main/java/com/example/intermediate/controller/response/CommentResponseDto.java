@@ -17,4 +17,5 @@ public class CommentResponseDto {
   private String nickname;
 //  private LocalDateTime createdAt;
 //  private LocalDateTime modifiedAt;
+  private boolean IsMine;
 }

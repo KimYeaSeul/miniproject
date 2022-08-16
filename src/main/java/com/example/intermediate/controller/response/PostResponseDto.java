@@ -24,4 +24,6 @@ public class PostResponseDto {
 //    private List<CommentResponseDto> comments;
     //  private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+
+    private boolean IsMine;
 }

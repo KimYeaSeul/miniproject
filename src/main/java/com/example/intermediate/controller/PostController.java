@@ -29,8 +29,9 @@ public class PostController {
 
     //게시글 상세 조회
     @RequestMapping(value = "/api/post/{id}", method = RequestMethod.GET)
-    public ResponseDto<?> getPost(@PathVariable Long id) {
-        return postService.getPost(id);
+    public ResponseDto<?> getPost(@PathVariable Long id,
+                                  HttpServletRequest request) {
+        return postService.getPost(id,request);
     }
 
 //    @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.GET)
@@ -43,8 +44,9 @@ public class PostController {
     @RequestMapping(value = "/api/post/{id}/comments", method = RequestMethod.GET)
     public ResponseDto<?> getAllCommentsById(@PathVariable Long id,
                                                  @RequestParam("commentsNum") Integer commentsNum,
-                                                 @RequestParam(value = "pageLimit",defaultValue = "5") Integer pageLimit){
-        return postService.getAllCommentsById(id, commentsNum, pageLimit);
+                                                 @RequestParam(value = "pageLimit",defaultValue = "5") Integer pageLimit,
+                                             HttpServletRequest request){
+        return postService.getAllCommentsById(id, commentsNum, pageLimit, request);
     }
 
     //  @GetMapping("/api/comment/{postId}")

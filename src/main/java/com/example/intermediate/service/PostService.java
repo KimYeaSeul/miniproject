@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,12 +74,30 @@ public class PostService {
 
     //게시글 상세 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getPost(Long id) {
+    public ResponseDto<?> getPost(Long id, HttpServletRequest request) {
         Post post = postRepository.findById(id).orElseGet(null);
         if (null == post) {
             return ResponseDto.fail("400", "Not existing postId");
         }
 
+        boolean IsMine = false;
+
+        if (null != request.getHeader("Authorization") && null != request.getHeader("RefreshToken")) {
+            Member member = validateMember(request);
+            IsMine = post.getMember().getNickname().equals(member.getNickname());
+//            return ResponseDto.success(
+//                    PostResponseDto.builder()
+//                            .id(post.getId())
+//                            .title(post.getTitle())
+//                            .imageUrl(post.getImageUrl())
+//                            .modifiedAt(post.getModifiedAt())
+//                            .content(post.getContent())
+//                            .nickname(post.getMember().getNickname())
+//                            .IsMine(false)
+//                            .build()
+//            );
+        }
+//        Member member = validateMember(request);
         return ResponseDto.success(
                 PostResponseDto.builder()
                         .id(post.getId())
@@ -87,6 +106,8 @@ public class PostService {
                         .modifiedAt(post.getModifiedAt())
                         .content(post.getContent())
                         .nickname(post.getMember().getNickname())
+//                        .IsMine(post.getMember().getNickname().equals(member.getNickname()))
+                        .IsMine(IsMine)
                         .build()
         );
     }
@@ -131,7 +152,7 @@ public class PostService {
 //    }
     //게시글 상세조회 댓글 분리
     @Transactional(readOnly = true)
-    public ResponseDto<?> getAllCommentsById(Long id, int commentsNum, int pageLimit){
+    public ResponseDto<?> getAllCommentsById(Long id, int commentsNum, int pageLimit, HttpServletRequest request){
         Post post = isPresentPost(id);
         if (post == null) {
             return ResponseDto.fail("400", "Not existing postId");
@@ -141,12 +162,27 @@ public class PostService {
         List<Comment> commentList = commentRepository.findAllByPost(post,pageable);
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
 
+        if (null == request.getHeader("Authorization") || null == request.getHeader("RefreshToken")) {
+            for (Comment comment : commentList) {
+                commentResponseDtoList.add(
+                        CommentResponseDto.builder()
+                                .id(comment.getId())
+                                .nickname(comment.getMember().getNickname())
+                                .content(comment.getContent())
+                                .IsMine(false)
+                                .build()
+                );
+            }
+            return ResponseDto.success(commentResponseDtoList);
+        }
+        Member member = validateMember(request);
         for (Comment comment : commentList) {
             commentResponseDtoList.add(
                     CommentResponseDto.builder()
                             .id(comment.getId())
                             .nickname(comment.getMember().getNickname())
                             .content(comment.getContent())
+                            .IsMine(comment.getMember().getNickname().equals(member.getNickname()))
                             .build()
             );
         }
