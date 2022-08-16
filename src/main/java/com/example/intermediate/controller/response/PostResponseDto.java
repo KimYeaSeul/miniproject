@@ -21,7 +21,7 @@ public class PostResponseDto {
     private String imageUrl;
     //이미지 UrlList
 //    private List<String> imageUrl;
-    private List<CommentResponseDto> comments;
+//    private List<CommentResponseDto> comments;
     //  private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 }

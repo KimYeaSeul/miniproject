@@ -73,28 +73,10 @@ public class PostService {
 
     //게시글 상세 조회
     @Transactional(readOnly = true)
-    public ResponseDto<?> getPost(Long postId,int commentsNum, int pageLimit) {
-
-//        Post post = isPresentPost(postId);
+    public ResponseDto<?> getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseGet(null);
         if (null == post) {
             return ResponseDto.fail("400", "Not existing postId");
-        }
-
-        Pageable pageable = PageRequest.of(commentsNum, pageLimit );
-        List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
-        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-
-        for (Comment comment : commentList) {
-            commentResponseDtoList.add(
-                    CommentResponseDto.builder()
-                            .id(comment.getId())
-                            .author(comment.getMember().getNickname())
-                            .content(comment.getContent())
-                            .createdAt(comment.getCreatedAt())
-                            .modifiedAt(comment.getModifiedAt())
-                            .build()
-            );
         }
 
         return ResponseDto.success(
@@ -105,10 +87,70 @@ public class PostService {
                         .modifiedAt(post.getModifiedAt())
                         .content(post.getContent())
                         .nickname(post.getMember().getNickname())
-                        .comments(commentResponseDtoList)
-//            .createdAt(post.getCreatedAt())
                         .build()
         );
+    }
+
+//    @Transactional(readOnly = true)
+//    public ResponseDto<?> getPost(Long postId,int commentsNum, int pageLimit) {
+//
+////        Post post = isPresentPost(postId);
+//        Post post = postRepository.findById(postId).orElseGet(null);
+//        if (null == post) {
+//            return ResponseDto.fail("400", "Not existing postId");
+//        }
+//
+//        Pageable pageable = PageRequest.of(commentsNum, pageLimit );
+//        List<Comment> commentList = commentRepository.findAllByPost(post, pageable);
+//        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+//
+//        for (Comment comment : commentList) {
+//            commentResponseDtoList.add(
+//                    CommentResponseDto.builder()
+//                            .id(comment.getId())
+//                            .author(comment.getMember().getNickname())
+//                            .content(comment.getContent())
+//                            .createdAt(comment.getCreatedAt())
+//                            .modifiedAt(comment.getModifiedAt())
+//                            .build()
+//            );
+//        }
+//
+//        return ResponseDto.success(
+//                PostResponseDto.builder()
+//                        .postId(post.getPostId())
+//                        .title(post.getTitle())
+//                        .imageUrl(post.getImageUrl())
+//                        .modifiedAt(post.getModifiedAt())
+//                        .content(post.getContent())
+//                        .nickname(post.getMember().getNickname())
+//                        .comments(commentResponseDtoList)
+////            .createdAt(post.getCreatedAt())
+//                        .build()
+//        );
+//    }
+    //게시글 상세조회 댓글 분리
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getAllCommentsByPostId(Long postId, int commentsNum, int pageLimit){
+        Post post = isPresentPost(postId);
+        if (post == null) {
+            return ResponseDto.fail("400", "Not existing postId");
+        }
+
+        Pageable pageable = PageRequest.of(commentsNum, pageLimit );
+        List<Comment> commentList = commentRepository.findAllByPost(post,pageable);
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+
+        for (Comment comment : commentList) {
+            commentResponseDtoList.add(
+                    CommentResponseDto.builder()
+                            .id(comment.getId())
+                            .nickname(comment.getMember().getNickname())
+                            .content(comment.getContent())
+                            .build()
+            );
+        }
+        return ResponseDto.success(commentResponseDtoList);
     }
 
     //게시글 전체 조회

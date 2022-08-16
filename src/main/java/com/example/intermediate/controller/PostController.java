@@ -29,11 +29,28 @@ public class PostController {
 
     //게시글 상세 조회
     @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.GET)
-    public ResponseDto<?> getPost(@PathVariable Long postId,
-                                  @RequestParam("commentsNum") Integer commentsNum,
-                                  @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit) {
-        return postService.getPost(postId, commentsNum, pageLimit);
+    public ResponseDto<?> getPost(@PathVariable Long postId) {
+        return postService.getPost(postId);
     }
+
+//    @RequestMapping(value = "/api/post/{postId}", method = RequestMethod.GET)
+//    public ResponseDto<?> getPost(@PathVariable Long postId,
+//                                  @RequestParam("commentsNum") Integer commentsNum,
+//                                  @RequestParam(value = "pageLimit", defaultValue = "5") Integer pageLimit) {
+//        return postService.getPost(postId, commentsNum, pageLimit);
+//    }
+    //게시글 상세 조회 댓글 분리
+    @RequestMapping(value = "/api/post/{postId}/comments", method = RequestMethod.GET)
+    public ResponseDto<?> getAllCommentsByPostId(@PathVariable Long postId,
+                                                 @RequestParam("commentsNum") Integer commentsNum,
+                                                 @RequestParam(value = "pageLimit",defaultValue = "5") Integer pageLimit){
+        return postService.getAllCommentsByPostId(postId, commentsNum, pageLimit);
+    }
+
+    //  @GetMapping("/api/comment/{postId}")
+//  public ResponseDto<?> getAllComments(@RequestParam Long postId) {
+//    return commentService.getAllCommentsByPost(postId);
+//  }
 
 
     //게시글 전체 조회
