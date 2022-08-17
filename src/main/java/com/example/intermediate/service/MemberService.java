@@ -141,55 +141,38 @@ public class MemberService {
     else return ResponseDto.fail("400","Nickname already exists");
   }
 
-  public ResponseDto<?> kakaoLogin(String code, HttpServletResponse response) {
-    try {
-      // 1. "인가 코드"로 "액세스 토큰" 요청
-      String accessToken = getKakaoAccessToken(code);
-      // 2. 토큰으로 카카오 API 호출
-      KakoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+  public ResponseDto<?> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    // 1. "인가 코드"로 "액세스 토큰" 요청
+    String accessToken = getKakaoAccessToken(code);
+    // 2. 토큰으로 카카오 API 호출
+    KakoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
-      // DB 에 중복된 Kakao Id 가 있는지 확인
-      Long kakaoId = kakaoUserInfo.getId();
-      Member kakaoUser = memberRepository.findByKakaoId(kakaoId)
-              .orElse(null);
-      if(kakaoUser != null){
-        TokenDto tokenDto = tokenProvider.generateTokenDto(kakaoUser);
-        tokenToHeaders(tokenDto, response);
-        return ResponseDto.success(
-                MemberResponseDto.builder()
-                        .id(kakaoUser.getId())
-                        .username(kakaoUser.getUsername())
-                        .nickname(kakaoUser.getNickname())
-                        .createdAt(kakaoUser.getCreatedAt())
-                        .modifiedAt(kakaoUser.getModifiedAt())
-                        .build()
-        );
-      }
-      else{
-        // 회원가입
-        Member member = Member.builder()
-                .username(UUID.randomUUID().toString())
-                .nickname(kakaoUserInfo.getNickname())
-                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
-                .kakaoId(kakaoId)
-                .build();
-        memberRepository.save(member);
-        TokenDto tokenDto = tokenProvider.generateTokenDto(member);
-        tokenToHeaders(tokenDto, response);
-        return ResponseDto.success(
-                MemberResponseDto.builder()
-                        .id(member.getId())
-                        .username(member.getUsername())
-                        .nickname(member.getNickname())
-                        .createdAt(member.getCreatedAt())
-                        .modifiedAt(member.getModifiedAt())
-                        .build()
-        );
-      }
+    // DB 에 중복된 Kakao Id 가 있는지 확인
+    Long kakaoId = kakaoUserInfo.getId();
+    Member kakaoUser = memberRepository.findByKakaoId(kakaoId)
+            .orElse(null);
+    if(kakaoUser == null){
+      // 회원가입
+      Member member = Member.builder()
+              .username(UUID.randomUUID().toString())
+              .nickname(kakaoUserInfo.getNickname())
+              .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+              .kakaoId(kakaoId)
+              .build();
+      memberRepository.save(member);
+      kakaoUser = member;
     }
-    catch (JsonProcessingException e){
-      return ResponseDto.fail("403","Failed to log in with Kakao");
-    }
+    TokenDto tokenDto = tokenProvider.generateTokenDto(kakaoUser);
+    tokenToHeaders(tokenDto, response);
+    return ResponseDto.success(
+            MemberResponseDto.builder()
+                    .id(kakaoUser.getId())
+                    .username(kakaoUser.getUsername())
+                    .nickname(kakaoUser.getNickname())
+                    .createdAt(kakaoUser.getCreatedAt())
+                    .modifiedAt(kakaoUser.getModifiedAt())
+                    .build()
+    );
   }
 
   private String getKakaoAccessToken(String code) throws JsonProcessingException {
@@ -253,56 +236,38 @@ public class MemberService {
   private String CLIENT_SECRET;
   @Value("${google.redirect.url}")
   private String REDIRECT_URI;
-  public ResponseDto<?> googleLogin(String code, HttpServletResponse response) {
-    try {
-      // 1. "인가 코드"로 "액세스 토큰" 요청
-      String accessToken = getGoogleAccessToken(code);
-      // 2. 토큰으로 카카오 API 호출
-      GoogleUserInfoDto googleUserInfo = getGoogleUserInfo(accessToken);
+  public ResponseDto<?> googleLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    // 1. "인가 코드"로 "액세스 토큰" 요청
+    String accessToken = getGoogleAccessToken(code);
+    // 2. 토큰으로 카카오 API 호출
+    GoogleUserInfoDto googleUserInfo = getGoogleUserInfo(accessToken);
 
-      // DB 에 중복된 Kakao Id 가 있는지 확인
-      String googleId = googleUserInfo.getId();
-      Member googleUser = memberRepository.findByGoogleId(googleId)
-              .orElse(null);
-      if(googleUser != null){
-        TokenDto tokenDto = tokenProvider.generateTokenDto(googleUser);
-        tokenToHeaders(tokenDto, response);
-        return ResponseDto.success(
-                MemberResponseDto.builder()
-                        .id(googleUser.getId())
-                        .username(googleUser.getUsername())
-                        .nickname(googleUser.getNickname())
-                        .createdAt(googleUser.getCreatedAt())
-                        .modifiedAt(googleUser.getModifiedAt())
-                        .build()
-        );
-      }
-      else{
-        // 회원가입
-        Member member = Member.builder()
-                .username(UUID.randomUUID().toString())
-                .nickname(googleUserInfo.getName())
-                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
-                .googleId(googleId)
-                .build();
-        memberRepository.save(member);
-        TokenDto tokenDto = tokenProvider.generateTokenDto(member);
-        tokenToHeaders(tokenDto, response);
-        return ResponseDto.success(
-                MemberResponseDto.builder()
-                        .id(member.getId())
-                        .username(member.getUsername())
-                        .nickname(member.getNickname())
-                        .createdAt(member.getCreatedAt())
-                        .modifiedAt(member.getModifiedAt())
-                        .build()
-        );
-      }
-
-
-    }catch (JsonProcessingException e){
-      return ResponseDto.fail("403","Failed to log in with Google");
+    // DB 에 중복된 Kakao Id 가 있는지 확인
+    String googleId = googleUserInfo.getId();
+    Member googleUser = memberRepository.findByGoogleId(googleId)
+            .orElse(null);
+    if(googleUser == null){
+      // 회원가입
+      Member member = Member.builder()
+              .username(UUID.randomUUID().toString())
+              .nickname(googleUserInfo.getName())
+              .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+              .googleId(googleId)
+              .build();
+      memberRepository.save(member);
+      googleUser = member;
     }
+    TokenDto tokenDto = tokenProvider.generateTokenDto(googleUser);
+    tokenToHeaders(tokenDto, response);
+    return ResponseDto.success(
+            MemberResponseDto.builder()
+                    .id(googleUser.getId())
+                    .username(googleUser.getUsername())
+                    .nickname(googleUser.getNickname())
+                    .createdAt(googleUser.getCreatedAt())
+                    .modifiedAt(googleUser.getModifiedAt())
+                    .build()
+    );
   }
 
   private String getGoogleAccessToken(String code) throws JsonProcessingException {
