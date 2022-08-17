@@ -1,11 +1,10 @@
 package com.example.intermediate.service;
 
-import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class AwsS3Service {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    private final AmazonS3 amazonS3;
+    private final AmazonS3Client amazonS3Client;
 
     public List<String> uploadFile(List<MultipartFile> multipartFile) {
         List<String> imgUrlList = new ArrayList<>();
@@ -37,9 +36,9 @@ public class AwsS3Service {
             objectMetadata.setContentType(file.getContentType());
 
             try(InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+                amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
-                imgUrlList.add(amazonS3.getUrl(bucket,fileName).toString());
+                imgUrlList.add(amazonS3Client.getUrl(bucket,fileName).toString());
             } catch(IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image Upload Fail");
             }
