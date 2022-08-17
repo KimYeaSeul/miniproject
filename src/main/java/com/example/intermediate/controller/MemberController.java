@@ -32,7 +32,7 @@ public class MemberController {
 
   @RequestMapping(value = "/user/login", method = RequestMethod.POST)
   public ResponseDto<?> login(@RequestBody @Valid LoginRequestDto requestDto,
-      HttpServletResponse response
+                              HttpServletResponse response
   ) {
     return memberService.login(requestDto, response);
   }
@@ -43,18 +43,16 @@ public class MemberController {
   }
 
   @PostMapping("/user/username")
-  public ResponseDto<?> usernameCheck(@RequestBody Map<String, String> body){
+  public ResponseDto<?> usernameCheck(@RequestBody Map<String, String> body) {
     // 이러케 해야 값이 들어오네요.!
     return memberService.checkUsername(body.get("username"));
   }
 
   @PostMapping("/user/nickname")
-  public ResponseDto<?> nicknameCheck(@RequestBody Map<String, String> body){
+  public ResponseDto<?> nicknameCheck(@RequestBody Map<String, String> body) {
     // 이러케 해야 값이 들어오네요.!
     return memberService.checkNickname(body.get("nickname"));
   }
-
-
 
 
 }
