@@ -24,8 +24,10 @@ public class S3Controller {
     private final AwsS3Service awsS3Service;
 
     @RequestMapping(value ="/api/image", method = RequestMethod.POST)
-    public ResponseDto<?> uploadFile(@RequestPart List<MultipartFile> multipartFile){
-        List<String> s3ImageList = awsS3Service.uploadFile(multipartFile);
+    public ResponseDto<?> uploadFile(@RequestPart(value="files") List<MultipartFile> multipart){
+
+        List<String> s3ImageList = awsS3Service.uploadFile(multipart);
         return ResponseDto.success(s3ImageList);
     }
+
 }

@@ -41,10 +41,9 @@ public class Post extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    public void update(PostRequestDto postRequestDto) {
-        this.title = postRequestDto.getTitle();
-        this.content = postRequestDto.getContent();
-        this.imageUrl = postRequestDto.getImageUrl();
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
     public boolean validateMember(Member member) {
