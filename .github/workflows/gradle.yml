@@ -22,8 +22,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v2
+    - name: Create Application Property
     - shell: bash
       run: |
-        echo "spring.datasource.username=$TEST"
+        echo $TEST
       env:
         TEST: ${{ secrets.TEST }}
