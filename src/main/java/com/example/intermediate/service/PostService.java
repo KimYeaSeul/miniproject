@@ -106,6 +106,7 @@ public class PostService {
                         .modifiedAt(post.getModifiedAt())
                         .content(post.getContent())
                         .nickname(post.getMember().getNickname())
+                        .numComments(post.getComments().size())
 //                        .IsMine(post.getMember().getNickname().equals(member.getNickname()))
                         .IsMine(IsMine)
                         .build()
