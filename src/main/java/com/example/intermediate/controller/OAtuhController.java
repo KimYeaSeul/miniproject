@@ -2,6 +2,7 @@ package com.example.intermediate.controller;
 
 import com.example.intermediate.controller.response.ResponseDto;
 import com.example.intermediate.service.MemberService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -43,7 +44,7 @@ public class OAtuhController {
 
     @ResponseBody
     @GetMapping("/user/google/callback")
-    public ResponseDto<?> oauthLogin(@RequestParam String code, HttpServletResponse response) {
+    public ResponseDto<?> oauthLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         return memberService.googleLogin(code, response);
     }
 
@@ -56,7 +57,7 @@ public class OAtuhController {
 
     @ResponseBody
     @GetMapping("/user/kakao/callback")
-    public ResponseDto<?> kakaoLogin(@RequestParam String code, HttpServletResponse response){
+    public ResponseDto<?> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         return memberService.kakaoLogin(code, response);
     }
 }
