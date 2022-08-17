@@ -1,9 +1,11 @@
 package com.example.intermediate.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.example.intermediate.controller.response.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,11 +27,13 @@ public class AwsS3Service {
     private String bucket;
     private final AmazonS3Client amazonS3Client;
 
-    public List<String> uploadFile(List<MultipartFile> multipartFile) {
+    public List<String> uploadFile(List<MultipartFile> multipart) {
+        System.out.println("i am in uploadFile");
         List<String> imgUrlList = new ArrayList<>();
 
         // forEach 구문을 통해 multipartFile로 넘어온 파일들 하나씩 fileNameList에 추가
-        multipartFile.forEach(file -> {
+        multipart.forEach(file -> {
+            System.out.println("사진의 사이즈는 : " + file.getSize());
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
@@ -40,7 +44,8 @@ public class AwsS3Service {
                         .withCannedAcl(CannedAccessControlList.PublicRead));
                 imgUrlList.add(amazonS3Client.getUrl(bucket,fileName).toString());
             } catch(IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image Upload Fail");
+                  ResponseDto.failUpload("Maximum upload size", file.getOriginalFilename(), "파일업로드 실패");
+//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image Upload Fail");
             }
         });
 

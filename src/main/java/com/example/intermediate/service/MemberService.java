@@ -301,7 +301,7 @@ public class MemberService {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Authorization", "Bearer " + accessToken);
     // HTTP 요청 보내기
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(headers);
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
     RestTemplate rt = new RestTemplate();//서버 대 서버 요청을 보냄
     ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, request, String.class);
 

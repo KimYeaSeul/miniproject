@@ -231,7 +231,7 @@ public class PostService {
             return ResponseDto.fail("400", "Modified Author Only");
         }
 
-        post.update(requestDto);
+        post.update(requestDto.getTitle(), requestDto.getContent());
         return ResponseDto.success(post);
     }
 
