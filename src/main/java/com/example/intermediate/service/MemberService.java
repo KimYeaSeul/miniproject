@@ -30,7 +30,12 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 @Service
 public class MemberService {
-
+  @Value("${google.client.id}")
+  private String CLIENT_ID;
+  @Value("${google.client.pw}")
+  private String CLIENT_SECRET;
+  @Value("${google.redirect.url}")
+  private String REDIRECT_URI;
   private final MemberRepository memberRepository;
 
 
@@ -184,7 +189,7 @@ public class MemberService {
     MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
     body.add("grant_type", "authorization_code");
     body.add("client_id", "2b986d1b574416a7d6d064619545aaff");//내 api키
-    body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+    body.add("redirect_uri", REDIRECT_URI);
     body.add("code", code);//카카오로부터 받은 인가코드
 
     // HTTP 요청 보내기
@@ -230,12 +235,7 @@ public class MemberService {
 
     return new KakoUserInfoDto(id,nickname);
   }
-  @Value("${google.client.id}")
-  private String CLIENT_ID;
-  @Value("${google.client.pw}")
-  private String CLIENT_SECRET;
-  @Value("${google.redirect.url}")
-  private String REDIRECT_URI;
+
   public ResponseDto<?> googleLogin(String code, HttpServletResponse response) throws JsonProcessingException {
     // 1. "인가 코드"로 "액세스 토큰" 요청
     String accessToken = getGoogleAccessToken(code);
