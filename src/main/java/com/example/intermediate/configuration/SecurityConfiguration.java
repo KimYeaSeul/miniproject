@@ -99,6 +99,7 @@ public class SecurityConfiguration {
     configuration.setAllowedOriginPatterns(Arrays.asList("*"));
     configuration.addExposedHeader("Authorization");
     configuration.addExposedHeader("RefreshToken");
+    configuration.addExposedHeader("refreshtoken");
 //    configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
     configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
     configuration.setAllowedHeaders(Arrays.asList("*"));

@@ -44,8 +44,8 @@ public class AwsS3Service {
                         .withCannedAcl(CannedAccessControlList.PublicRead));
                 imgUrlList.add(amazonS3Client.getUrl(bucket,fileName).toString());
             } catch(IOException e) {
-                  ResponseDto.failUpload("Maximum upload size", file.getOriginalFilename(), "파일업로드 실패");
-//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image Upload Fail");
+//                  ResponseDto.failUpload("Maximum upload size", file.getOriginalFilename(), "파일업로드 실패");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image Upload Fail");
             }
         });
 

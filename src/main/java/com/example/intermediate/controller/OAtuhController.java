@@ -55,9 +55,11 @@ public class OAtuhController {
                 KAKAO_REDIRECT_URI + "&response_type=" + RESPONSE_TYPE;
     }
 
-    @ResponseBody
-    @GetMapping("/user/kakao/callback")
-    public ResponseDto<?> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        return memberService.kakaoLogin(code, response);
-    }
+//    @ResponseBody
+//    @GetMapping("/user/kakao/callback")
+//    public ResponseDto<?> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+//        System.out.println("kakao callback 타나요?");
+//        return memberService.kakaoLogin(code, response);
+////        return "redirect:http://localhost:3000";
+//    }
 }
