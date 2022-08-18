@@ -35,7 +35,10 @@ public class MemberService {
   @Value("${google.client.pw}")
   private String CLIENT_SECRET;
   @Value("${google.redirect.url}")
-  private String REDIRECT_URI;
+  private String GOOGLE_REDIRECT_URI;
+
+  @Value("${kakao.redirect.url}")
+  private String KAKAO_REDIRECT_URI;
   private final MemberRepository memberRepository;
 
 
@@ -189,7 +192,7 @@ public class MemberService {
     MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
     body.add("grant_type", "authorization_code");
     body.add("client_id", "2b986d1b574416a7d6d064619545aaff");//내 api키
-    body.add("redirect_uri", REDIRECT_URI);
+    body.add("redirect_uri", KAKAO_REDIRECT_URI);
     body.add("code", code);//카카오로부터 받은 인가코드
 
     // HTTP 요청 보내기
@@ -277,7 +280,7 @@ public class MemberService {
     params.add("code", code);
     params.add("client_id", CLIENT_ID);
     params.add("client_secret", CLIENT_SECRET);
-    params.add("redirect_uri", REDIRECT_URI);
+    params.add("redirect_uri", GOOGLE_REDIRECT_URI);
     params.add("grant_type", "authorization_code");
 
     HttpHeaders headers = new HttpHeaders();
