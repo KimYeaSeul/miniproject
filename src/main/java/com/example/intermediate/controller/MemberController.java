@@ -7,6 +7,8 @@ import com.example.intermediate.service.MemberService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +54,13 @@ public class MemberController {
   public ResponseDto<?> nicknameCheck(@RequestBody Map<String, String> body) {
     // 이러케 해야 값이 들어오네요.!
     return memberService.checkNickname(body.get("nickname"));
+  }
+
+  @GetMapping("/user/kakao/callback")
+  public ResponseDto<?> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    System.out.println("kakao callback 타나요?");
+    return memberService.kakaoLogin(code, response);
+//        return "redirect:http://localhost:3000";
   }
 
 

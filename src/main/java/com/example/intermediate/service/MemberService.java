@@ -172,6 +172,7 @@ public class MemberService {
     }
     TokenDto tokenDto = tokenProvider.generateTokenDto(kakaoUser);
     tokenToHeaders(tokenDto, response);
+
     return ResponseDto.success(
             MemberResponseDto.builder()
                     .id(kakaoUser.getId())
